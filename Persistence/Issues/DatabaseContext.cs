@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Persistence.Users;
 
 namespace Persistence.Issues
 {
@@ -10,5 +10,6 @@ namespace Persistence.Issues
         }
 
         public DbSet<IssueEntity> Issues { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
     }
 }

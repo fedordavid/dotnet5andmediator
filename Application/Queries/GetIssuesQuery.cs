@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Application.Pagination;
+using JetBrains.Annotations;
 using MediatR;
-using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Issues;
 
@@ -10,21 +10,20 @@ namespace Application.Queries
 {
     public static class GetIssuesQuery
     {
+        public record Query() : IRequest<IPageable<IssueView>>;
 
-        public record Query() : IRequest<IssueView[]>;
-
-        public class Handler : IRequestHandler<Query, IssueView[]>
+        [UsedImplicitly]
+        public class Handler : IRequestHandler<Query, IPageable<IssueView>>
         {
-            private readonly IIssueViews _repository;
+            private readonly IIssueViewsRepository _repository;
 
-            public Handler(IIssueViews repository)
+            public Handler(IIssueViewsRepository repository)
             {
                 _repository = repository;
             }
-            public async Task<IssueView[]> Handle(Query request, CancellationToken cancellationToken)
+            public Task<IPageable<IssueView>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var res = await _repository.Issues.ToArrayAsync();
-                return res;
+                return Task.FromResult(_repository.Issues.AsPageable());
             }
         }
     }

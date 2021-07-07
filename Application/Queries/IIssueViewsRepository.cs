@@ -2,7 +2,7 @@
 
 namespace Persistence.Issues
 {
-    public interface IIssueViews
+    public interface IIssueViewsRepository
     {
         public IQueryable<IssueView> Issues { get; }
     }

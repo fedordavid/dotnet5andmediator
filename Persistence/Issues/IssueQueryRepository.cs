@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Issues
 {
-    public class IssueQueryRepository : IIssueViews
+    public class IssueQueryRepository : IIssueViewsRepository
     {
         private DatabaseContext _context { get; }
         private IMapper _mapper { get; }

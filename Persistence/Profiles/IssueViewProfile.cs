@@ -7,7 +7,8 @@ namespace Persistence.Profiles
     {
         public IssueViewProfile()
         {
-            CreateMap<IssueEntity, IssueView>();
+            CreateMap<IssueEntity, IssueView>()
+                .ForMember(x => x.UserName, opt => opt.MapFrom(x => x.User.Name));
         }
     }
 }

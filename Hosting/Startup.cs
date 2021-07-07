@@ -1,20 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Application.Queries;
-using MediatR;
+using API;
+using Application;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Persistence.Issues;
-using Persistence.Profiles;
+using Microsoft.OpenApi.Models;
+using Persistence;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Hosting
 {
@@ -30,13 +23,25 @@ namespace Hosting
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApplicationLayer();
+            services.AddPersistenceLayer(_configuration);
+            services.AddApiLayer();
             
-            services.AddControllers();
-            services.AddMediatR(Assembly.GetAssembly(typeof(IIssueViews)));
-            services.AddAutoMapper(typeof(IssueViewProfile));
-            services.AddDbContext<DatabaseContext>(options =>
-                options.UseSqlServer(_configuration.GetConnectionString("Database")));
-            services.AddScoped<IIssueViews, IssueQueryRepository>();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "MediatR API",
+                    Description = "MediatR API serves only learning purposes",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "David Fedor",
+                        Email = "dark1500@gmail.com",
+                    }
+                });
+                c.AddFluentValidationRules();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,6 +51,17 @@ namespace Hosting
             {
                 app.UseDeveloperExceptionPage();
             }
+            
+            app.UseSwagger(c =>
+            {
+                c.SerializeAsV2 = true;
+            });
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.RoutePrefix = string.Empty;
+            });
 
             app.UseRouting();
 
